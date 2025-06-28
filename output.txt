@@ -1,0 +1,47 @@
+fun void main
+var int a;
+var int b;
+var int c;
+var int arr;
+
+// Tarea 2: Constant Folding - Expresiones con constantes
+a = 17;
+b = 8;
+c = 19;
+
+// Tarea 3: Code Hoisting - Expresiones invariantes en loops
+t0 = ((x*y)+z);
+for(i=0;i<100;i++) {
+  arr[t0] += i;
+}
+
+t1 = (a*b);
+for(j=0;j<50;j++) {
+  arr[t1] += j*2;
+}
+
+// Expresión que depende de variable de loop (NO debe hoisted)
+t2 = (k*5);
+for(k=0;k<20;k++) {
+  arr[t2] += 10;
+}
+
+// Múltiples expresiones invariantes
+t3 = (x+y);
+t4 = ((a*2)+b);
+for(m=0;m<30;m++) {
+  arr[t3] += m;
+  arr[t4] += m*3;
+}
+
+// Expresión compleja invariante
+t5 = (((x+y)*z)-a);
+for(n=0;n<40;n++) {
+  arr[t5] += n;
+}
+
+print(a);
+print(b);
+print(c);
+print(arr);
+endfun
