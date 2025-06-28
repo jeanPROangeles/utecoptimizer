@@ -1,4 +1,6 @@
 import re
+import sys
+import os
 
 class Node:
     def __init__(self, op=None, left=None, right=None, value=None):
@@ -18,6 +20,33 @@ class Node:
             return str(self.value)
         return f"({self.left.to_code()}{self.op}{self.right.to_code()})"
 
+# === PLEGADO DE CONSTANTES
+def constant_fold(node):
+    if node is None or node.value is not None:
+        return node
+    node.left = constant_fold(node.left)
+    node.right = constant_fold(node.right)
+    if node.left.value is not None and node.right.value is not None:
+        lval, rval = node.left.value, node.right.value
+        if node.op == '+': return Node(value=lval + rval)
+        if node.op == '-': return Node(value=lval - rval)
+        if node.op == '*': return Node(value=lval * rval)
+        if node.op == '/': return Node(value=lval // rval)
+    return node
+
+# === ETIQUETADO DE ÁRBOL
+def label_tree(node):
+    if node is None:
+        return 0
+    if node.value is not None:
+        node.label = 1
+        return 1
+    l1 = label_tree(node.left)
+    l2 = label_tree(node.right)
+    node.label = l1 + 1 if l1 == l2 else max(l1, l2)
+    return node.label
+
+# === PARSEO DE EXPRESIÓN ARITMÉTICA MEJORADO
 def parse_expression(expr):
     tokens = re.findall(r'[a-zA-Z_]\w*|\d+|[()+\-*/]', expr)
     def precedence(op): return {'+':1, '-':1, '*':2, '/':2}.get(op, 0)
@@ -41,7 +70,7 @@ def parse_expression(expr):
                 while ops and ops[-1] != '(':
                     reduce()
                 ops.pop()
-            else:
+            else:  # operator
                 while ops and precedence(ops[-1]) >= precedence(tok):
                     reduce()
                 ops.append(tok)
@@ -50,32 +79,6 @@ def parse_expression(expr):
             reduce()
         return output[0]
     return to_ast(tokens)
-
-def constant_fold(node):
-    if node is None or isinstance(node.value, str):
-        return node
-    if node.value is not None:
-        return node
-    node.left = constant_fold(node.left)
-    node.right = constant_fold(node.right)
-    if isinstance(node.left.value, int) and isinstance(node.right.value, int):
-        lval, rval = node.left.value, node.right.value
-        if node.op == '+': return Node(value=lval + rval)
-        if node.op == '-': return Node(value=lval - rval)
-        if node.op == '*': return Node(value=lval * rval)
-        if node.op == '/': return Node(value=lval // rval)
-    return node
-
-def label_tree(node):
-    if node is None:
-        return 0
-    if node.value is not None:
-        node.label = 1
-        return 1
-    l1 = label_tree(node.left)
-    l2 = label_tree(node.right)
-    node.label = max(l1, l2) if l1 != l2 else l1 + 1
-    return node.label
 
 def is_invariant(node, loop_vars):
     if node is None:
@@ -96,7 +99,7 @@ def hoist_expressions(code_lines):
         if line.startswith("for") and '{' in line:
             hoist = []
             loop_block = []
-            loop_vars = ['i']  # Variables que cambian en el loop
+            loop_vars = ['i', 'j', 'k', 'm', 'n']  # Variables comunes de loop
             
             i += 1
             # Procesar contenido del loop
@@ -104,7 +107,7 @@ def hoist_expressions(code_lines):
                 original_line = code_lines[i]
                 stmt_stripped = original_line.strip()
                 
-                # Regex corregido para capturar += correctamente
+                # Regex para capturar += correctamente
                 match = re.match(r'([a-zA-Z_]\w*)\[(.+?)\]\s*\+\=\s*(.+);', stmt_stripped)
                 if match:
                     array_var = match.group(1)
@@ -127,7 +130,6 @@ def hoist_expressions(code_lines):
                         else:
                             loop_block.append(original_line.rstrip())
                     except:
-                        # Si hay error parseando, mantener original
                         loop_block.append(original_line.rstrip())
                 else:
                     loop_block.append(original_line.rstrip())
@@ -147,39 +149,88 @@ def hoist_expressions(code_lines):
     
     return optimized_lines
 
+# === PROCESAMIENTO GENERAL DEL ARCHIVO
 def optimize_file(input_path, output_path):
-    with open(input_path, 'r') as f:
-        raw_lines = f.readlines()
+    try:
+        with open(input_path, 'r') as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        print(f"❌ Error: No se encontró el archivo '{input_path}'")
+        return False
+    except Exception as e:
+        print(f"❌ Error leyendo el archivo: {e}")
+        return False
 
-    new_lines = []
-    for line in raw_lines:
+    optimized_lines = []
+    for line in lines:
+        original_line = line.rstrip('\n')
         stripped = line.strip()
+        
         # Procesar asignaciones simples (constant folding)
         if '=' in stripped and ';' in stripped and not stripped.startswith('for') and '+=' not in stripped:
             try:
                 var, expr = stripped.split('=', 1)
                 expr = expr.replace(';', '').strip()
-                ast = parse_expression(expr)
-                ast = constant_fold(ast)
-                label_tree(ast)
+                tree = parse_expression(expr)
+                tree = constant_fold(tree)
+                label_tree(tree)
+                
+                # Mantener indentación original
                 indent = re.match(r'^\s*', line).group(0)
-                if isinstance(ast.value, int):
-                    new_lines.append(f"{indent}{var.strip()} = {ast.value};")
+                if tree.value is not None:
+                    optimized_lines.append(f"{indent}{var.strip()} = {tree.value};")
                 else:
-                    new_lines.append(f"{indent}{var.strip()} = {ast.to_code()};")
+                    optimized_lines.append(f"{indent}{var.strip()} = {tree.to_code()};")
             except:
-                new_lines.append(line.rstrip('\n'))
+                optimized_lines.append(original_line)
         else:
-            new_lines.append(line.rstrip('\n'))
+            optimized_lines.append(original_line)
 
     # Aplicar code hoisting
-    optimized_lines = hoist_expressions(new_lines)
+    optimized_lines = hoist_expressions(optimized_lines)
 
-    with open(output_path, 'w') as f:
-        for l in optimized_lines:
-            f.write(l + '\n')
+    try:
+        with open(output_path, 'w') as f:
+            for line in optimized_lines:
+                f.write(line + '\n')
+        return True
+    except Exception as e:
+        print(f"❌ Error escribiendo el archivo: {e}")
+        return False
 
-    print(f"✅ Optimización completa → {output_path}")
+def show_usage():
+    print("Uso:")
+    print("  python3 nombre_de_archivo.py <archivo_entrada> [archivo_salida]")
+    print("  python3 nombre_de_archivo.py input.txt")
+    print("  python3 nombre_de_archivo.py input.txt output.txt")
+    print()
+    print("Si no se especifica archivo de salida, se usará 'output.txt'")
 
+# === MAIN ===
 if __name__ == "__main__":
-    optimize_file("input.txt", "output.txt")
+    if len(sys.argv) < 2:
+        print("❌ Error: Falta especificar el archivo de entrada")
+        show_usage()
+        sys.exit(1)
+    
+    input_path = sys.argv[1]
+    
+    # Determinar archivo de salida
+    if len(sys.argv) >= 3:
+        output_path = sys.argv[2]
+    else:
+        # Si no se especifica, usar output.txt por defecto
+        output_path = "output.txt"
+    
+    print(f"🔧 UtecCompiler Optimizer")
+    print(f"📁 Entrada: {input_path}")
+    print(f"📁 Salida: {output_path}")
+    print(f"⚡ Procesando...")
+    
+    success = optimize_file(input_path, output_path)
+    
+    if success:
+        print(f"✅ Optimización completada → {output_path}")
+    else:
+        print(f"❌ Error en la optimización")
+        sys.exit(1)

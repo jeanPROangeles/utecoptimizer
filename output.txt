@@ -21,23 +21,22 @@ for(j=0;j<50;j++) {
 }
 
 // Expresión que depende de variable de loop (NO debe hoisted)
-t2 = (k*5);
 for(k=0;k<20;k++) {
-  arr[t2] += 10;
+  arr[k*5] += 10;
 }
 
 // Múltiples expresiones invariantes
-t3 = (x+y);
-t4 = ((a*2)+b);
+t2 = (x+y);
+t3 = ((a*2)+b);
 for(m=0;m<30;m++) {
-  arr[t3] += m;
-  arr[t4] += m*3;
+  arr[t2] += m;
+  arr[t3] += m*3;
 }
 
 // Expresión compleja invariante
-t5 = (((x+y)*z)-a);
+t4 = (((x+y)*z)-a);
 for(n=0;n<40;n++) {
-  arr[t5] += n;
+  arr[t4] += n;
 }
 
 print(a);
