@@ -220,8 +220,8 @@ if __name__ == "__main__":
     if len(sys.argv) >= 3:
         output_path = sys.argv[2]
     else:
-        # Si no se especifica, usar output.txt por defecto
-        output_path = "output.txt"
+        base = os.path.splitext(os.path.basename(input_path))[0]
+        output_path = f"{base}.s"
     
     print(f"🔧 UtecCompiler Optimizer")
     print(f"📁 Entrada: {input_path}")
