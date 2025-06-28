@@ -22,6 +22,41 @@ Abre una terminal en cualquier parte y ejecuta:
 curl -O https://raw.githubusercontent.com/jeanPROangeles/utecoptimizer/main/install_utecoptimizer.sh
 sh install_utecoptimizer.sh
 ```
+
+## ⚙️ Uso
+
+Una vez instalado, puedes ejecutar `utecopt` desde **cualquier carpeta** del sistema:
+
+```bash
+utecopt nombre_del_archivo.txt
+```
+
+🔁 Esto generará automáticamente un archivo con el mismo nombre, pero con extensión `.s`.
+
+📌 Ejemplo:
+
+```bash
+utecopt input2.txt
+```
+
+📄 Salida generada:
+
+```
+input2.s
+```
+
+También puedes personalizar el nombre del archivo de salida:
+
+```bash
+utecopt input2.txt salida_optima.txt
+```
+
+✨ Resultado:
+
+```
+salida_optima.txt
+```
+
 <details> <summary><strong>📥 input2.txt</strong></summary>
 
 ```c
