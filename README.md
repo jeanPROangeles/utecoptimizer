@@ -16,11 +16,10 @@ Herramienta de optimización de código estilo C-lite que aplica:
 
 ## 🚀 Instalación automática en 2 pasos
 
-Abre una terminal en cualquier parte y ejecuta:
+Abre una terminal en la parte donde esta el install_utecoptimizer.sh:
 
 ```bash
-curl -O https://raw.githubusercontent.com/jeanPROangeles/utecoptimizer/main/install_utecoptimizer.sh
-sh install_utecoptimizer.sh
+bash install_utecoptimizer.sh
 ```
 
 ## ⚙️ Uso
@@ -31,6 +30,7 @@ Una vez instalado, puedes ejecutar `utecopt` desde **cualquier carpeta** del sis
 utecopt nombre_del_archivo.txt
 ```
 
+pero para que funcione asegurate crear o tener tus inputs
 🔁 Esto generará automáticamente un archivo con el mismo nombre, pero con extensión `.s`.
 
 📌 Ejemplo:
