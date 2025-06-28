@@ -2,7 +2,7 @@
 
 <details> <summary><strong>📥 input2.txt</strong></summary>
 
-c
+```c
 fun void main
 var int a;
 var int b;
@@ -44,11 +44,12 @@ print(b);
 print(c);
 print(arr);
 endfun
+```
 </details>
 
 <details> <summary><strong>⚙️ output2.txt (generado automáticamente)</strong></summary>
 
-c
+```c
 t0 = ((x*y)+z);
 t1 = (a*b);
 t2 = (x+y);
@@ -96,4 +97,5 @@ print(b);
 print(c);
 print(arr);
 endfun
+```
 </details>
