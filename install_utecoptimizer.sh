@@ -9,34 +9,34 @@ ALIAS_NAME="utecopt"
 TARGET_PATH="/usr/local/bin/$ALIAS_NAME"
 
 # === Preparación ===
-echo "📁 Creando carpeta temporal en: $WORKDIR"
+echo "📁 Creando carpeta temporal: $WORKDIR"
 rm -rf "$WORKDIR"
 mkdir -p "$WORKDIR"
 cd "$WORKDIR" || exit 1
 
-# === Clonación del repositorio ===
-echo "📥 Clonando repositorio desde GitHub..."
+# === Clonar repo ===
+echo "📥 Clonando desde $REPO_URL..."
 git clone "$REPO_URL"
-cd utecoptimizer || { echo "❌ No se pudo entrar al proyecto"; exit 1; }
+cd utecoptimizer || { echo "❌ No se pudo acceder al proyecto"; exit 1; }
 
-# === Permisos y enlace simbólico ===
-echo "🔧 Configurando ejecutable..."
+# === Preparar ejecutable ===
+echo "🔧 Haciendo ejecutable el script Python..."
 chmod +x main.py
+
+# === Crear comando global ===
+echo "🔗 Enlazando como comando global: $ALIAS_NAME"
 sudo ln -sf "$(pwd)/main.py" "$TARGET_PATH"
 
 # === Verificación ===
 echo ""
-if command -v $ALIAS_NAME &> /dev/null; then
-    echo "✅ Instalación completada correctamente"
-    echo "Puedes ejecutar tu optimizador así:"
-    echo "  $ALIAS_NAME entrada.txt"
-    echo "  → Generará salida: entrada.s"
+if command -v $ALIAS_NAME &>/dev/null; then
+    echo "✅ Instalación exitosa"
+    echo "Puedes usarlo con:  $ALIAS_NAME archivo.txt"
+    echo "→ Generará: archivo.s"
 else
-    echo "❌ Falló la creación del comando global '$ALIAS_NAME'"
-    echo "Verifica si tienes permisos de administrador"
+    echo "❌ Algo salió mal. ¿Tienes permisos sudo?"
     exit 1
 fi
 
 echo ""
-echo "📌 Proyecto clonado en: $WORKDIR/utecoptimizer"
-echo "🧹 Puedes eliminar esa carpeta cuando termines"
+echo "🧹 Puedes eliminar $WORKDIR si ya no lo necesitas"
