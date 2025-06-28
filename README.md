@@ -1,4 +1,26 @@
 # utecoptimizer
+# 🧠 UtecOptimizer
+
+Herramienta de optimización de código estilo C-lite que aplica:
+
+- ✔️ Constant Folding (Plegado de Constantes)
+- ✔️ Code Hoisting (extracción de expresiones invariantes de bucles)
+- ✔️ Reconstrucción aritmética sin espacios erróneos
+- ✔️ Conservación de indentación original
+
+> 📍 Proyecto de optimización para compiladores  
+> 🎓 Universidad de Ingeniería y Tecnología (UTEC)  
+> 👨‍💻 Desarrollado por JeanPROÁngeles
+
+---
+
+## 🚀 Instalación automática en 2 pasos
+
+Abre una terminal en cualquier parte y ejecuta:
+
+```bash
+curl -O https://raw.githubusercontent.com/jeanPROangeles/utecoptimizer/main/install_utecoptimizer.sh
+sh install_utecoptimizer.sh
 
 <details> <summary><strong>📥 input2.txt</strong></summary>
 
