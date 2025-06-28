@@ -21,7 +21,7 @@ Abre una terminal en cualquier parte y ejecuta:
 ```bash
 curl -O https://raw.githubusercontent.com/jeanPROangeles/utecoptimizer/main/install_utecoptimizer.sh
 sh install_utecoptimizer.sh
-
+```
 <details> <summary><strong>📥 input2.txt</strong></summary>
 
 ```c
